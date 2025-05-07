@@ -5,14 +5,18 @@ from .models import Receta, Ingrediente, Categoria
 from .serializers import RecetaSerializer, IngredienteSerializer, CategoriaSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+import django_filters
+from .models import Receta, Categoria
+from .filters import RecetaFilter
+
 
 class RecetaViewSet(viewsets.ModelViewSet):
     queryset = Receta.objects.all()
     serializer_class = RecetaSerializer
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
-    filterset_fields = ['categoria', 'difficulty']
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecetaFilter  # Usamos el filtro personalizado
     ordering_fields = ['time_required', 'difficulty']
-
+    
     @action(detail=False, methods=['get'])
     def search_by_ingredients(self, request):
         ingredientes = request.query_params.get('ingredientes', None)
